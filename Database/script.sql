@@ -20,7 +20,7 @@ CREATE TABLE agendamento(
     qual_sala BIGINT NOT NULL,
     data_inicio TIMESTAMP WITH TIME ZONE NOT NULL, 
     data_fim TIMESTAMP WITH TIME ZONE NOT NULL, 
-    CONSTRAINT fk_agendamento_sala FOREIGN KEY (qual_sala) REFERENCES sala(id),
+    CONSTRAINT fk_agendamento_sala FOREIGN KEY (qual_sala) REFERENCES sala(id) ON DELETE RESTRICT,
     CONSTRAINT verificar_data CHECK (data_fim > data_inicio)
 );
 
@@ -33,12 +33,12 @@ CREATE TABLE log_operacao(
 
 /*Funcionamento do log de operações*/
 
-CREATE OR REPLACE FUNCTION inserirlog()
+CREATE OR REPLACE FUNCTION fn_inserirlog()
 RETURNS TRIGGER
 AS $$
     BEGIN
         INSERT INTO log_operacao(nome_tabela, tipo_operacao)
-        VALUES (TG_TABLE_NAME, TG_OP);
+        VALUES (TG_TABLE_NAME, TG_OP::tipos_operacoes);
 
         IF TG_OP = 'DELETE' THEN
             RETURN OLD;
@@ -48,25 +48,25 @@ AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER log_sala
+CREATE TRIGGER tr_log_sala
     AFTER
     INSERT OR DELETE OR UPDATE
 ON sala
     FOR EACH ROW
 EXECUTE FUNCTION
-    inserirlog();
+    fn_inserirlog();
 
-CREATE TRIGGER log_agendamento
+CREATE TRIGGER tr_log_agendamento
     AFTER
     INSERT OR DELETE OR UPDATE
 ON agendamento
     FOR EACH ROW
 EXECUTE FUNCTION
-    inserirlog();
+    fn_inserirlog();
 
 /*Triggers Agendamento*/
 
-CREATE OR REPLACE FUNCTION bloquearexcluir()
+CREATE OR REPLACE FUNCTION fn_bloquearexcluir()
 RETURNS TRIGGER
 AS $$
     BEGIN
@@ -83,37 +83,49 @@ AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION bloquearigualdade()
+CREATE OR REPLACE FUNCTION fn_bloquearigualdade()
 RETURNS TRIGGER
 AS $$
     BEGIN
-        IF EXISTS (
-            SELECT id
-            FROM agendamento
-            WHERE agendamento.id != NEW.id and 
-            agendamento.qual_sala = NEW.qual_sala and
-            agendamento.data_inicio < NEW.data_fim and 
-            agendamento.data_fim > NEW.data_inicio
-        ) THEN
-            RAISE EXCEPTION 'A data escolhida ja esta agendada para a sala! Por favor, escolha uma nova data ou uma nova sala';
+        IF TG_OP = 'INSERT' THEN
+            IF EXISTS (
+                SELECT id
+                FROM agendamento
+                WHERE agendamento.qual_sala = NEW.qual_sala and
+                agendamento.data_inicio < NEW.data_fim and 
+                agendamento.data_fim > NEW.data_inicio
+            ) THEN
+                RAISE EXCEPTION 'A data escolhida ja esta agendada para a sala! Por favor, escolha uma nova data ou uma nova sala';
+            END IF;
+        ELSIF TG_OP = 'UPDATE' THEN
+            IF EXISTS (
+                SELECT id
+                FROM agendamento
+                WHERE agendamento.id != NEW.id and 
+                agendamento.qual_sala = NEW.qual_sala and
+                agendamento.data_inicio < NEW.data_fim and 
+                agendamento.data_fim > NEW.data_inicio
+            ) THEN
+                RAISE EXCEPTION 'A data escolhida ja esta agendada para a sala! Por favor, escolha uma nova data ou uma nova sala';
+            END IF; 
         END IF;
 
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER excluir_agendamento
+CREATE TRIGGER tr_excluir_agendamento
     BEFORE
     DELETE
 ON sala
     FOR EACH ROW
 EXECUTE FUNCTION
-    bloquearexcluir();
+    fn_bloquearexcluir();
 
-CREATE TRIGGER agendamentos_iguais
+CREATE TRIGGER tr_agendamentos_iguais
     BEFORE
     INSERT OR UPDATE
 ON agendamento
     FOR EACH ROW
 EXECUTE FUNCTION
-    bloquearigualdade();
+    fn_bloquearigualdade();
