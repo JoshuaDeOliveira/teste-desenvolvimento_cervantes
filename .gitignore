@@ -1,1 +1,7 @@
 .vs/
+appsettings.json
+bin/
+obj/
+*.user
+*.suo
+.DS_Store
