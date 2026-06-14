@@ -1,10 +1,32 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace AplicativoAgendamento
 {
-    internal class Database
+    public class Database
     {
+        public NpgsqlConnection Conectar()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            string DadosConectar = config.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrEmpty(DadosConectar))
+            {
+                MessageBox.Show("A string de conexão não foi encontrada. Verifique o arquivo appsettings.json.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new InvalidOperationException("String de conexão ausente.");
+            }
+
+            return new NpgsqlConnection(DadosConectar);
+        }   
     }
 }
