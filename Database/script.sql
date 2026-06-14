@@ -129,3 +129,39 @@ ON agendamento
     FOR EACH ROW
 EXECUTE FUNCTION
     fn_bloquearigualdade();
+
+/*Tratamento de erros em caso de nome duplicado*/
+
+CREATE OR REPLACE FUNCTION fn_bloquear_nome_duplicado()
+RETURNS TRIGGER
+AS $$
+	BEGIN
+		IF TG_OP = 'INSERT' THEN
+			IF EXISTS(
+				SELECT id
+				FROM sala
+				WHERE NEW.nome = sala.nome
+				) THEN 
+					RAISE EXCEPTION 'Esse nome ja esta em uso! Por favor, verifique as salas existentes';
+			END IF;
+		ELSIF TG_OP = 'UPDATE' THEN
+			IF EXISTS(
+				SELECT id
+				FROM sala
+				WHERE NEW.nome = sala.nome and New.ID != sala.ID
+				) THEN 
+					RAISE EXCEPTION 'Esse nome ja esta em uso! Por favor, verifique as salas existentes';
+			END IF;
+		END IF;
+
+		RETURN NEW;
+	END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_nome_duplicado
+	BEFORE
+	INSERT OR UPDATE
+ON sala
+	FOR EACH ROW
+EXECUTE FUNCTION
+	fn_bloquear_nome_duplicado();
