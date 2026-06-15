@@ -165,3 +165,4 @@ ON sala
 	FOR EACH ROW
 EXECUTE FUNCTION
 	fn_bloquear_nome_duplicado();
+	
