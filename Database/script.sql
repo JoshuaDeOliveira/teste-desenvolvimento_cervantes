@@ -20,8 +20,7 @@ CREATE TABLE agendamento(
     qual_sala BIGINT NOT NULL,
     data_inicio TIMESTAMP WITH TIME ZONE NOT NULL, 
     data_fim TIMESTAMP WITH TIME ZONE NOT NULL, 
-    CONSTRAINT fk_agendamento_sala FOREIGN KEY (qual_sala) REFERENCES sala(id) ON DELETE RESTRICT,
-    CONSTRAINT verificar_data CHECK (data_fim > data_inicio)
+    CONSTRAINT fk_agendamento_sala FOREIGN KEY (qual_sala) REFERENCES sala(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE log_operacao(
@@ -165,4 +164,47 @@ ON sala
 	FOR EACH ROW
 EXECUTE FUNCTION
 	fn_bloquear_nome_duplicado();
-	
+
+/*Tratamento de Erros Data*/
+
+CREATE OR REPLACE FUNCTION fn_bloquear_data_passado()
+RETURNS TRIGGER
+AS $$
+	BEGIN
+		IF NEW.data_inicio < CURRENT_TIMESTAMP THEN
+			RAISE EXCEPTION 'Não é possivel agendar a sala para uma data passada! Verifique novamente a data inserida';
+		END IF;
+
+		RETURN NEW;
+	END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_data_passado
+	BEFORE
+	INSERT OR UPDATE
+ON agendamento
+	FOR EACH ROW
+EXECUTE FUNCTION
+	fn_bloquear_data_passado();
+
+CREATE OR REPLACE FUNCTION fn_bloquear_discrepancia_data()
+RETURNS TRIGGER
+AS $$
+    BEGIN
+        IF NEW.data_fim < NEW.data_inicio THEN
+            RAISE EXCEPTION 'Verifique novamente as datas inseridas!';
+        END IF;
+
+        RETURN NEW; 
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_datas_discrepantes
+    BEFORE
+    INSERT OR UPDATE
+on agendamento
+    FOR EACH ROW
+EXECUTE FUNCTION
+    fn_bloquear_discrepancia_data();
+
+/*Tratamento de Erro nome "vazio"*/

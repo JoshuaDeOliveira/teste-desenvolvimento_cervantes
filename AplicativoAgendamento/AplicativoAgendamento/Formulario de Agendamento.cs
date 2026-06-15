@@ -10,10 +10,12 @@ namespace AplicativoAgendamento
         public Form1()
         {
             InitializeComponent();
-            CarregarTelas();
+            AtualizarInfo();
 
             btnDeletar.Enabled = false;
             btnEditar.Enabled = false;
+            DataInicio.MinDate = DateTime.Now;
+            DataFinal.MinDate = DateTime.Now;
         }
 
         /*Cadastro e Visualização de Salas*/
@@ -67,7 +69,7 @@ namespace AplicativoAgendamento
                     var NovoNome = txtNomeSala.Text.Trim();
                     using var atualizarSala = new NpgsqlCommand("UPDATE sala SET nome = (@Nome) WHERE id = (@Id)", conexao);
                     atualizarSala.Parameters.AddWithValue("@Nome", NovoNome);
-                    atualizarSala.Parameters.AddWithValue("@Id", int.Parse(SalaEditandoId));
+                    atualizarSala.Parameters.AddWithValue("@Id", long.Parse(SalaEditandoId));
                     atualizarSala.ExecuteNonQuery();
 
                     SalaEditandoId = null;
@@ -75,7 +77,7 @@ namespace AplicativoAgendamento
                 }
                 txtNomeSala.Clear();
                 txtNomeSala.Focus();
-                CarregarTelas();
+                AtualizarInfo();
             }
             catch (NpgsqlException error)
             {
@@ -96,10 +98,10 @@ namespace AplicativoAgendamento
                 using var conexao = new Database().Conectar();
                 conexao.Open();
                 using var deletarSala = new NpgsqlCommand("DELETE FROM sala WHERE id = (@Id)", conexao);
-                deletarSala.Parameters.AddWithValue("@id", int.Parse(SalaId));
+                deletarSala.Parameters.AddWithValue("@id", long.Parse(SalaId));
 
                 deletarSala.ExecuteNonQuery();
-                CarregarTelas();
+                AtualizarInfo();
             }
             catch (NpgsqlException error)
             {
@@ -153,13 +155,45 @@ namespace AplicativoAgendamento
                 using var conexao = new Database().Conectar();
                 conexao.Open();
                 using var salascadastradas = new NpgsqlDataAdapter("SELECT id, nome FROM sala", conexao);
-                using var datatable = new DataTable();
+                var datatable = new DataTable();
                 salascadastradas.Fill(datatable);
-                SalasCad.DataSource = datatable;
-                SalasCad.DisplayMember = "nome";
-                SalasCad.ValueMember = "id";
+                AgenSalas.DisplayMember = "nome";
+                AgenSalas.ValueMember = "id";
+                AgenSalas.DataSource = datatable;
             }
             catch (NpgsqlException error)
+            {
+                MessageBox.Show(error.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show($"Ocorreu um erro inesperado: {error.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btn_SalvarAgen_Click(object sender, EventArgs e)
+        {
+            try {
+                if (AgenSalas.SelectedValue == null)
+                {
+                    MessageBox.Show("Cadastre uma sala antes de realizar um agendamento!");
+                    return;
+                }
+
+                var QualSala = AgenSalas.SelectedValue.ToString();
+                var AgenInicio = DataInicio.Value;
+                var AgenFim = DataFinal.Value;
+
+                using var conexao = new Database().Conectar();
+                conexao.Open();
+                using var NovoAgendamento = new NpgsqlCommand("INSERT INTO agendamento(qual_sala, data_inicio, data_fim) VALUES (@IdSala, @DataInicio, @DataFim)", conexao);
+                NovoAgendamento.Parameters.AddWithValue("@DataInicio", AgenInicio);
+                NovoAgendamento.Parameters.AddWithValue("@DataFim", AgenFim);
+                NovoAgendamento.Parameters.AddWithValue("@IdSala", long.Parse(QualSala));
+                NovoAgendamento.ExecuteNonQuery();
+
+                AtualizarInfo();
+            } catch (NpgsqlException error)
             {
                 MessageBox.Show(error.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -173,28 +207,33 @@ namespace AplicativoAgendamento
 
         public void CarregarLog()
         {
-            try {
+            try
+            {
                 using var conexao = new Database().Conectar();
                 conexao.Open();
                 using var visualizarlogs = new NpgsqlDataAdapter("SELECT * FROM log_operacao", conexao);
                 using var DataTable = new DataTable();
-                visualizarlogs.Fill(DataTable); 
+                visualizarlogs.Fill(DataTable);
                 LogView.DataSource = DataTable;
-            } catch (NpgsqlException error) {
+            }
+            catch (NpgsqlException error)
+            {
                 MessageBox.Show(error.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } catch (Exception error) {
+            }
+            catch (Exception error)
+            {
                 MessageBox.Show($"Ocorreu um erro inesperado: {error.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         /*Metodos gerais da Aplicação*/
 
-        public void CarregarTelas() { 
+        public void AtualizarInfo()
+        {
+            SalasCadastradas();
             CarregarLog();
             CarregarSalas();
             CarregarAgendamentos();
-            SalasCadastradas();
         }
-
     }
 }

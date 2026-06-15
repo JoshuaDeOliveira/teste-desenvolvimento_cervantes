@@ -40,13 +40,13 @@
             tabAgendamento = new TabPage();
             button2 = new Button();
             button3 = new Button();
-            button1 = new Button();
+            btn_SalvarAgen = new Button();
             label5 = new Label();
             label4 = new Label();
             label3 = new Label();
-            dateTimePicker2 = new DateTimePicker();
-            dateTimePicker1 = new DateTimePicker();
-            SalasCad = new ComboBox();
+            DataFinal = new DateTimePicker();
+            DataInicio = new DateTimePicker();
+            AgenSalas = new ComboBox();
             label2 = new Label();
             AgendamentoView = new DataGridView();
             tabLogOperacao = new TabPage();
@@ -164,13 +164,13 @@
             tabAgendamento.BackColor = Color.DarkGray;
             tabAgendamento.Controls.Add(button2);
             tabAgendamento.Controls.Add(button3);
-            tabAgendamento.Controls.Add(button1);
+            tabAgendamento.Controls.Add(btn_SalvarAgen);
             tabAgendamento.Controls.Add(label5);
             tabAgendamento.Controls.Add(label4);
             tabAgendamento.Controls.Add(label3);
-            tabAgendamento.Controls.Add(dateTimePicker2);
-            tabAgendamento.Controls.Add(dateTimePicker1);
-            tabAgendamento.Controls.Add(SalasCad);
+            tabAgendamento.Controls.Add(DataFinal);
+            tabAgendamento.Controls.Add(DataInicio);
+            tabAgendamento.Controls.Add(AgenSalas);
             tabAgendamento.Controls.Add(label2);
             tabAgendamento.Controls.Add(AgendamentoView);
             tabAgendamento.Location = new Point(4, 24);
@@ -198,14 +198,15 @@
             button3.Text = "Editar";
             button3.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btn_SalvarAgen
             // 
-            button1.Location = new Point(22, 219);
-            button1.Name = "button1";
-            button1.Size = new Size(178, 23);
-            button1.TabIndex = 8;
-            button1.Text = "Enviar";
-            button1.UseVisualStyleBackColor = true;
+            btn_SalvarAgen.Location = new Point(22, 219);
+            btn_SalvarAgen.Name = "btn_SalvarAgen";
+            btn_SalvarAgen.Size = new Size(178, 23);
+            btn_SalvarAgen.TabIndex = 8;
+            btn_SalvarAgen.Text = "Salvar";
+            btn_SalvarAgen.UseVisualStyleBackColor = true;
+            btn_SalvarAgen.Click += btn_SalvarAgen_Click;
             // 
             // label5
             // 
@@ -234,31 +235,34 @@
             label3.TabIndex = 5;
             label3.Text = "Data Final";
             // 
-            // dateTimePicker2
+            // DataFinal
             // 
-            dateTimePicker2.CustomFormat = "dd/MM/yyyy HH:mm";
-            dateTimePicker2.Format = DateTimePickerFormat.Custom;
-            dateTimePicker2.Location = new Point(22, 181);
-            dateTimePicker2.Name = "dateTimePicker2";
-            dateTimePicker2.Size = new Size(178, 23);
-            dateTimePicker2.TabIndex = 4;
+            DataFinal.CustomFormat = "dd/MM/yyyy HH:mm";
+            DataFinal.Format = DateTimePickerFormat.Custom;
+            DataFinal.Location = new Point(22, 181);
+            DataFinal.Name = "DataFinal";
+            DataFinal.Size = new Size(178, 23);
+            DataFinal.TabIndex = 4;
             // 
-            // dateTimePicker1
+            // DataInicio
             // 
-            dateTimePicker1.CustomFormat = "dd/MM/yyyy HH:mm";
-            dateTimePicker1.Format = DateTimePickerFormat.Custom;
-            dateTimePicker1.Location = new Point(22, 127);
-            dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(178, 23);
-            dateTimePicker1.TabIndex = 3;
+            DataInicio.CustomFormat = "dd/MM/yyyy HH:mm";
+            DataInicio.Format = DateTimePickerFormat.Custom;
+            DataInicio.Location = new Point(22, 127);
+            DataInicio.MaxDate = new DateTime(3000, 12, 31, 0, 0, 0, 0);
+            DataInicio.MinDate = new DateTime(2026, 6, 15, 0, 0, 0, 0);
+            DataInicio.Name = "DataInicio";
+            DataInicio.Size = new Size(178, 23);
+            DataInicio.TabIndex = 3;
             // 
-            // SalasCad
+            // AgenSalas
             // 
-            SalasCad.FormattingEnabled = true;
-            SalasCad.Location = new Point(22, 72);
-            SalasCad.Name = "SalasCad";
-            SalasCad.Size = new Size(121, 23);
-            SalasCad.TabIndex = 2;
+            AgenSalas.DropDownStyle = ComboBoxStyle.DropDownList;
+            AgenSalas.FormattingEnabled = true;
+            AgenSalas.Location = new Point(22, 72);
+            AgenSalas.Name = "AgenSalas";
+            AgenSalas.Size = new Size(121, 23);
+            AgenSalas.TabIndex = 2;
             // 
             // label2
             // 
@@ -346,13 +350,13 @@
         private Button btnDeletar;
         private Button btnEditar;
         private Label label1;
-        private Button button1;
+        private Button btn_SalvarAgen;
         private Label label5;
         private Label label4;
         private Label label3;
-        private DateTimePicker dateTimePicker2;
-        private DateTimePicker dateTimePicker1;
-        private ComboBox SalasCad;
+        private DateTimePicker DataFinal;
+        private DateTimePicker DataInicio;
+        private ComboBox AgenSalas;
         private Label label2;
         private DataGridView AgendamentoView;
         private Label label6;
