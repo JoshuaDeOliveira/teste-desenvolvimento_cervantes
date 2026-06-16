@@ -38,8 +38,8 @@
             btnSalvar = new Button();
             txtNomeSala = new TextBox();
             tabAgendamento = new TabPage();
-            button2 = new Button();
-            button3 = new Button();
+            btnDeletarAgen = new Button();
+            btnEditarAgen = new Button();
             btn_SalvarAgen = new Button();
             label5 = new Label();
             label4 = new Label();
@@ -48,7 +48,7 @@
             DataInicio = new DateTimePicker();
             AgenSalas = new ComboBox();
             label2 = new Label();
-            AgendamentoView = new DataGridView();
+            AgenView = new DataGridView();
             tabLogOperacao = new TabPage();
             label6 = new Label();
             LogView = new DataGridView();
@@ -56,7 +56,7 @@
             tabSalas.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SalasView).BeginInit();
             tabAgendamento.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)AgendamentoView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AgenView).BeginInit();
             tabLogOperacao.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)LogView).BeginInit();
             SuspendLayout();
@@ -162,8 +162,8 @@
             // tabAgendamento
             // 
             tabAgendamento.BackColor = Color.DarkGray;
-            tabAgendamento.Controls.Add(button2);
-            tabAgendamento.Controls.Add(button3);
+            tabAgendamento.Controls.Add(btnDeletarAgen);
+            tabAgendamento.Controls.Add(btnEditarAgen);
             tabAgendamento.Controls.Add(btn_SalvarAgen);
             tabAgendamento.Controls.Add(label5);
             tabAgendamento.Controls.Add(label4);
@@ -172,7 +172,7 @@
             tabAgendamento.Controls.Add(DataInicio);
             tabAgendamento.Controls.Add(AgenSalas);
             tabAgendamento.Controls.Add(label2);
-            tabAgendamento.Controls.Add(AgendamentoView);
+            tabAgendamento.Controls.Add(AgenView);
             tabAgendamento.Location = new Point(4, 24);
             tabAgendamento.Name = "tabAgendamento";
             tabAgendamento.Padding = new Padding(3);
@@ -180,23 +180,25 @@
             tabAgendamento.TabIndex = 1;
             tabAgendamento.Text = "Agendamentos";
             // 
-            // button2
+            // btnDeletarAgen
             // 
-            button2.Location = new Point(22, 248);
-            button2.Name = "button2";
-            button2.Size = new Size(77, 23);
-            button2.TabIndex = 13;
-            button2.Text = "Deletar";
-            button2.UseVisualStyleBackColor = true;
+            btnDeletarAgen.Location = new Point(22, 248);
+            btnDeletarAgen.Name = "btnDeletarAgen";
+            btnDeletarAgen.Size = new Size(77, 23);
+            btnDeletarAgen.TabIndex = 13;
+            btnDeletarAgen.Text = "Deletar";
+            btnDeletarAgen.UseVisualStyleBackColor = true;
+            btnDeletarAgen.Click += btnDeletarAgen_Click;
             // 
-            // button3
+            // btnEditarAgen
             // 
-            button3.Location = new Point(115, 248);
-            button3.Name = "button3";
-            button3.Size = new Size(85, 23);
-            button3.TabIndex = 12;
-            button3.Text = "Editar";
-            button3.UseVisualStyleBackColor = true;
+            btnEditarAgen.Location = new Point(115, 248);
+            btnEditarAgen.Name = "btnEditarAgen";
+            btnEditarAgen.Size = new Size(85, 23);
+            btnEditarAgen.TabIndex = 12;
+            btnEditarAgen.Text = "Editar";
+            btnEditarAgen.UseVisualStyleBackColor = true;
+            btnEditarAgen.Click += btnEditarAgen_Click;
             // 
             // btn_SalvarAgen
             // 
@@ -273,16 +275,17 @@
             label2.TabIndex = 1;
             label2.Text = "Lista de Agendamentos";
             // 
-            // AgendamentoView
+            // AgenView
             // 
-            AgendamentoView.AllowUserToAddRows = false;
-            AgendamentoView.AllowUserToDeleteRows = false;
-            AgendamentoView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            AgendamentoView.Location = new Point(370, 72);
-            AgendamentoView.Name = "AgendamentoView";
-            AgendamentoView.ReadOnly = true;
-            AgendamentoView.Size = new Size(462, 355);
-            AgendamentoView.TabIndex = 0;
+            AgenView.AllowUserToAddRows = false;
+            AgenView.AllowUserToDeleteRows = false;
+            AgenView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            AgenView.Location = new Point(370, 72);
+            AgenView.Name = "AgenView";
+            AgenView.ReadOnly = true;
+            AgenView.Size = new Size(462, 355);
+            AgenView.TabIndex = 0;
+            AgenView.SelectionChanged += AgenView_SelectionChanged;
             // 
             // tabLogOperacao
             // 
@@ -330,7 +333,7 @@
             ((System.ComponentModel.ISupportInitialize)SalasView).EndInit();
             tabAgendamento.ResumeLayout(false);
             tabAgendamento.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)AgendamentoView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AgenView).EndInit();
             tabLogOperacao.ResumeLayout(false);
             tabLogOperacao.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)LogView).EndInit();
@@ -358,10 +361,10 @@
         private DateTimePicker DataInicio;
         private ComboBox AgenSalas;
         private Label label2;
-        private DataGridView AgendamentoView;
+        private DataGridView AgenView;
         private Label label6;
         private DataGridView LogView;
-        private Button button2;
-        private Button button3;
+        private Button btnDeletarAgen;
+        private Button btnEditarAgen;
     }
 }

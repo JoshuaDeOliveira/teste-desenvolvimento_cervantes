@@ -208,3 +208,23 @@ EXECUTE FUNCTION
     fn_bloquear_discrepancia_data();
 
 /*Tratamento de Erro nome "vazio"*/
+
+CREATE OR REPLACE FUNCTION fn_bloquear_nomes_vazio()
+RETURNS TRIGGER
+AS $$
+	BEGIN
+		IF NEW.nome = '' THEN
+			RAISE EXCEPTION 'Por favor, digite um nome para a sala';
+		END IF;
+
+		RETURN NEW;
+	END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_nome_vazio
+	BEFORE
+	INSERT OR UPDATE
+ON sala
+	FOR EACH ROW
+EXECUTE FUNCTION
+	fn_bloquear_nomes_vazio();
