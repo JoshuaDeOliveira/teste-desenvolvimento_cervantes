@@ -2,7 +2,6 @@ using Npgsql;
 using System;
 using System.Data;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AplicativoAgendamento
 {
@@ -10,7 +9,7 @@ namespace AplicativoAgendamento
     {
         public Form1()
         {
-            InitializeComponent();
+            InitializeComponent();    
             AtualizarInfo();
 
             btnDeletar.Enabled = false;
@@ -33,7 +32,7 @@ namespace AplicativoAgendamento
         }
 
 
-        public void CarregarSalas()
+        private void CarregarSalas()
         {
             try
             {
@@ -95,10 +94,10 @@ namespace AplicativoAgendamento
         private void btnDeletar_Click(object sender, EventArgs e)
         {
             DataGridViewRow infoid = SalasView.SelectedRows[0];
-            string SalaId = infoid.Cells["id"].Value.ToString();
 
             try
             {
+                string SalaId = infoid.Cells["id"].Value.ToString();
                 using var conexao = new Database().Conectar();
                 conexao.Open();
                 using var deletarSala = new NpgsqlCommand("DELETE FROM sala WHERE id = (@Id)", conexao);
@@ -136,7 +135,7 @@ namespace AplicativoAgendamento
             btnDeletarAgen.Enabled = AgenView.SelectedRows.Count > 0;
         }
 
-        public void CarregarAgendamentos()
+        private void CarregarAgendamentos()
         {
             try
             {
@@ -158,7 +157,7 @@ namespace AplicativoAgendamento
             }
         }
 
-        public void SalasCadastradas()
+        private void SalasCadastradas()
         {
             try
             {
@@ -185,7 +184,7 @@ namespace AplicativoAgendamento
         {
             try
             {
-                if (AgenSalas.SelectedValue == null)
+                if (AgenSalas.SelectedValue == null || AgenSalas.SelectedValue == DBNull.Value)
                 {
                     MessageBox.Show("Cadastre uma sala antes de realizar um agendamento!");
                     return;
@@ -198,13 +197,16 @@ namespace AplicativoAgendamento
                 var AgenInicio = DataInicio.Value;
                 var AgenFim = DataFinal.Value;
 
-                if (AgenEditandoId == null) {
+                if (AgenEditandoId == null)
+                {
                     using var NovoAgendamento = new NpgsqlCommand("INSERT INTO agendamento(qual_sala, data_inicio, data_fim) VALUES (@IdSala, @DataInicio, @DataFim)", conexao);
                     NovoAgendamento.Parameters.AddWithValue("@DataInicio", AgenInicio);
                     NovoAgendamento.Parameters.AddWithValue("@DataFim", AgenFim);
                     NovoAgendamento.Parameters.AddWithValue("@IdSala", long.Parse(QualSala));
                     NovoAgendamento.ExecuteNonQuery();
-                } else {
+                }
+                else
+                {
 
                     using var atualizarAgendamento = new NpgsqlCommand("UPDATE agendamento SET qual_sala = (@IdSala), data_inicio = (@DataInicio), data_fim = (@DataFim) WHERE id = (@Id)", conexao);
                     atualizarAgendamento.Parameters.AddWithValue("@IdSala", long.Parse(QualSala));
@@ -265,7 +267,7 @@ namespace AplicativoAgendamento
 
         /*Log de Operações*/
 
-        public void CarregarLog()
+        private void CarregarLog()
         {
             try
             {
@@ -288,7 +290,7 @@ namespace AplicativoAgendamento
 
         /*Metodos gerais da Aplicação*/
 
-        public void AtualizarInfo()
+        private void AtualizarInfo()
         {
             SalasCadastradas();
             CarregarLog();

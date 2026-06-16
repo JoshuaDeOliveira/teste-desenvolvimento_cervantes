@@ -1,38 +1,44 @@
 # Sistema de Agendamento de Salas - Coworking
 
-Este repositório contém a solução para o **Teste de Desenvolvimento 1 para a Cervantes Tecnologia**, que consiste em um sistema desktop para gerenciamento e agendamento de salas de coworking. 
+Solução para o Teste de Desenvolvimento 1 da Cervantes Tecnologia. O sistema permite gerenciar salas de coworking e seus agendamentos através de uma aplicação desktop desenvolvida em C# com Windows Forms e PostgreSQL.
 
-## 📋 Requisitos do Sistema
+## O que o sistema faz
 
-### 1. Cadastro de Salas
-* Permite o registro de salas para o coworking.
-* Cada sala deve possuir um Nome obrigatório e que não se repita no sistema.
+- Cadastro, edição e exclusão de salas
+- Agendamento de salas com data e hora de início e fim
+- Registro automático de todas as operações realizadas no banco
 
-### 2. Cadastro de Agendamentos
-* Permite reservar uma sala informando:
-  * A sala desejada (vínculo obrigatório).
-  * Data e hora de início.
-  * Data e hora de fim.
+## Regras de negócio
 
-## ⚙️ Regras de Negócio e Validações (Camada de Banco de Dados)
+Todas as validações estão implementadas exclusivamente no banco de dados:
 
-O sistema foi projetado para que o banco de dados barre qualquer operação que infrija as seguintes regras:
-* **Campos Obrigatórios:** Todos os dados de salas e agendamentos devem ser preenchidos.
-* **Unicidade:** O nome de uma sala deve ser único.
-* **Consistência de Horário:** A data/hora final de um agendamento deve ser obrigatoriamente maior que a data/hora inicial.
-* **Bloqueio de Sobreposição:** Não é permitida a reserva de uma mesma sala em horários que se sobreponham.
-* **Integridade Referencial:** Não é permitida a exclusão de uma sala que possua agendamentos futuros programados.
+- Nome da sala é obrigatório e não pode se repetir
+- Data/hora de fim deve ser maior que a de início
+- Não é permitido agendar uma sala em horário já ocupado
+- Não é possível excluir uma sala com agendamentos futuros
 
-## 🗄️ Auditoria e Logs
+## Pré-requisitos
 
-O banco de dados conta com um mecanismo automático de auditoria. Todas as operações de escrita (`INSERT`, `UPDATE` e `DELETE`) realizadas nas tabelas principais são registradas em uma tabela de log contendo:
-* O nome da tabela modificada.
-* O tipo da operação realizada.
-* A data e hora exata do ocorrido.
+- .NET 10
+- PostgreSQL 14+
+- Visual Studio 2022+
 
----
+## Como rodar
 
-## 📁 Estrutura do Repositório
+1. Execute o script SQL localizado em `/database` no seu PostgreSQL
+2. Dentro da pasta `/src/AplicativoAgendamento`, crie um arquivo `appsettings.json` com as suas credenciais:
 
-* `/src` - Código-fonte da aplicação desktop.
-* `/database` - Scripts de criação do banco de dados, tabelas, restrições e mecanismos de auditoria.
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Username=SEU_USUARIO;Password=SUA_SENHA;Database=SEU_BANCO"
+  }
+}
+```
+
+3. Abra o arquivo `AplicativoAgendamento.slnx` no Visual Studio e rode com **F5**
+
+## Estrutura do repositório
+
+- `/src` — código fonte da aplicação
+- `/database` — script SQL de criação do banco

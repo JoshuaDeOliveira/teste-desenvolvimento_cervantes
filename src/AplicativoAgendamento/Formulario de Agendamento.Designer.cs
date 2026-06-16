@@ -94,7 +94,7 @@
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 19F);
             label1.ForeColor = SystemColors.ControlText;
-            label1.Location = new Point(407, 33);
+            label1.Location = new Point(399, 18);
             label1.Name = "label1";
             label1.Size = new Size(166, 36);
             label1.TabIndex = 10;
@@ -102,7 +102,7 @@
             // 
             // btnDeletar
             // 
-            btnDeletar.Location = new Point(213, 157);
+            btnDeletar.Location = new Point(213, 159);
             btnDeletar.Name = "btnDeletar";
             btnDeletar.Size = new Size(62, 34);
             btnDeletar.TabIndex = 9;
@@ -124,7 +124,7 @@
             // 
             NomeDaSala.AutoSize = true;
             NomeDaSala.Font = new Font("Segoe UI", 12F);
-            NomeDaSala.Location = new Point(27, 48);
+            NomeDaSala.Location = new Point(27, 57);
             NomeDaSala.Name = "NomeDaSala";
             NomeDaSala.Size = new Size(110, 21);
             NomeDaSala.TabIndex = 7;
@@ -135,10 +135,10 @@
             SalasView.AllowUserToAddRows = false;
             SalasView.AllowUserToDeleteRows = false;
             SalasView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            SalasView.Location = new Point(407, 81);
+            SalasView.Location = new Point(399, 57);
             SalasView.MultiSelect = false;
             SalasView.Name = "SalasView";
-            SalasView.Size = new Size(419, 335);
+            SalasView.Size = new Size(433, 370);
             SalasView.TabIndex = 6;
             SalasView.SelectionChanged += SalasView_SelectionChanged;
             // 
@@ -176,7 +176,7 @@
             tabAgendamento.Location = new Point(4, 24);
             tabAgendamento.Name = "tabAgendamento";
             tabAgendamento.Padding = new Padding(3);
-            tabAgendamento.Size = new Size(846, 441);
+            tabAgendamento.Size = new Size(849, 441);
             tabAgendamento.TabIndex = 1;
             tabAgendamento.Text = "Agendamentos";
             // 
@@ -295,7 +295,7 @@
             tabLogOperacao.Location = new Point(4, 24);
             tabLogOperacao.Name = "tabLogOperacao";
             tabLogOperacao.Padding = new Padding(3);
-            tabLogOperacao.Size = new Size(846, 441);
+            tabLogOperacao.Size = new Size(849, 441);
             tabLogOperacao.TabIndex = 2;
             tabLogOperacao.Text = "Log de Operações (Admin)";
             // 
