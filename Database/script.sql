@@ -1,5 +1,7 @@
 /*Codigo SQL criado por Joshua Erbe Dutra de Oliveira*/
 
+SET TIME ZONE 'America/Sao_Paulo';
+
 DROP TABLE IF EXISTS agendamento;
 
 DROP TABLE IF EXISTS sala;
@@ -141,7 +143,7 @@ AS $$
 			IF EXISTS(
 				SELECT id
 				FROM sala
-				WHERE LOWER(NEW.nome) = LOWER(sala.nome) 
+				WHERE REPLACE(TRIM(LOWER(NEW.nome)), ' ', '') = REPLACE(TRIM(LOWER(sala.nome)), ' ', '')
 				) THEN 
 					RAISE EXCEPTION 'Esse nome ja esta em uso! Por favor, verifique as salas existentes';
 			END IF;
@@ -149,7 +151,7 @@ AS $$
 			IF EXISTS(
 				SELECT id
 				FROM sala
-				WHERE LOWER(NEW.nome) = LOWER(sala.nome) and New.ID != sala.ID
+				WHERE REPLACE(TRIM(LOWER(NEW.nome)), ' ', '') = REPLACE(TRIM(LOWER(sala.nome)), ' ', '') and New.ID != sala.ID
 				) THEN 
 					RAISE EXCEPTION 'Esse nome ja esta em uso! Por favor, verifique as salas existentes';
 			END IF;
@@ -175,6 +177,10 @@ AS $$
 	BEGIN
 		IF NEW.data_inicio < CURRENT_TIMESTAMP THEN
 			RAISE EXCEPTION 'Não é possivel agendar a sala para uma data passada! Verifique novamente a data inserida';
+		END IF;
+
+        IF TG_OP = 'UPDATE' AND NEW.data_inicio = OLD.data_inicio THEN
+			RETURN NEW;
 		END IF;
 
 		RETURN NEW;

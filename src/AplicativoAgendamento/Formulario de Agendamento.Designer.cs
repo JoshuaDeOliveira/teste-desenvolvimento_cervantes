@@ -55,13 +55,13 @@
             tabAgendamento = new TabPage();
             groupBox5 = new GroupBox();
             DataF = new Label();
-            DataInicio = new DateTimePicker();
+            DataFinal = new DateTimePicker();
             groupBox6 = new GroupBox();
             label5 = new Label();
             AgenSalas = new ComboBox();
             groupBox4 = new GroupBox();
             label3 = new Label();
-            DataFinal = new DateTimePicker();
+            DataInicio = new DateTimePicker();
             label2 = new Label();
             groupBox3 = new GroupBox();
             btnDeletarAgen = new Button();
@@ -287,7 +287,7 @@
             // groupBox5
             // 
             groupBox5.Controls.Add(DataF);
-            groupBox5.Controls.Add(DataInicio);
+            groupBox5.Controls.Add(DataFinal);
             groupBox5.Location = new Point(8, 193);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(326, 57);
@@ -304,17 +304,15 @@
             DataF.TabIndex = 18;
             DataF.Text = "Data Final";
             // 
-            // DataInicio
+            // DataFinal
             // 
-            DataInicio.CustomFormat = "dd/MM/yyyy HH:mm";
-            DataInicio.Font = new Font("Segoe UI", 11F);
-            DataInicio.Format = DateTimePickerFormat.Custom;
-            DataInicio.Location = new Point(99, 18);
-            DataInicio.MaxDate = new DateTime(3000, 12, 31, 0, 0, 0, 0);
-            DataInicio.MinDate = new DateTime(2026, 6, 15, 0, 0, 0, 0);
-            DataInicio.Name = "DataInicio";
-            DataInicio.Size = new Size(203, 27);
-            DataInicio.TabIndex = 3;
+            DataFinal.CustomFormat = "dd/MM/yyyy HH:mm";
+            DataFinal.Font = new Font("Segoe UI", 11F);
+            DataFinal.Format = DateTimePickerFormat.Custom;
+            DataFinal.Location = new Point(99, 18);
+            DataFinal.Name = "DataFinal";
+            DataFinal.Size = new Size(203, 27);
+            DataFinal.TabIndex = 4;
             // 
             // groupBox6
             // 
@@ -349,7 +347,7 @@
             // groupBox4
             // 
             groupBox4.Controls.Add(label3);
-            groupBox4.Controls.Add(DataFinal);
+            groupBox4.Controls.Add(DataInicio);
             groupBox4.Location = new Point(6, 120);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(328, 57);
@@ -366,15 +364,17 @@
             label3.TabIndex = 18;
             label3.Text = "Data Inicial";
             // 
-            // DataFinal
+            // DataInicio
             // 
-            DataFinal.CustomFormat = "dd/MM/yyyy HH:mm";
-            DataFinal.Font = new Font("Segoe UI", 11F);
-            DataFinal.Format = DateTimePickerFormat.Custom;
-            DataFinal.Location = new Point(101, 15);
-            DataFinal.Name = "DataFinal";
-            DataFinal.Size = new Size(203, 27);
-            DataFinal.TabIndex = 4;
+            DataInicio.CustomFormat = "dd/MM/yyyy HH:mm";
+            DataInicio.Font = new Font("Segoe UI", 11F);
+            DataInicio.Format = DateTimePickerFormat.Custom;
+            DataInicio.Location = new Point(101, 19);
+            DataInicio.MaxDate = new DateTime(3000, 12, 31, 0, 0, 0, 0);
+            DataInicio.MinDate = new DateTime(2026, 6, 15, 0, 0, 0, 0);
+            DataInicio.Name = "DataInicio";
+            DataInicio.Size = new Size(203, 27);
+            DataInicio.TabIndex = 3;
             // 
             // label2
             // 
@@ -495,6 +495,7 @@
             AgenView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             AgenView.Size = new Size(479, 378);
             AgenView.TabIndex = 14;
+            AgenView.SelectionChanged += AgenView_SelectionChanged;
             // 
             // tabLogOperacao
             // 

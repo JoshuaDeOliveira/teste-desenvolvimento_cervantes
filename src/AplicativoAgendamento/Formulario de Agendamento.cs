@@ -149,6 +149,13 @@ namespace AplicativoAgendamento
                 using var visualizaragendamentos = new NpgsqlDataAdapter("SELECT agendamento.id, agendamento.qual_sala, sala.nome, agendamento.data_inicio,agendamento.data_fim " +
                     "FROM agendamento JOIN sala ON agendamento.qual_sala = sala.id", conexao);
                 using var DataTable = new DataTable();
+
+                DataTable.Columns.Add("id", typeof(long));
+                DataTable.Columns.Add("qual_sala", typeof(long));
+                DataTable.Columns.Add("nome", typeof(string));
+                DataTable.Columns.Add("data_inicio", typeof(DateTime));
+                DataTable.Columns.Add("data_fim", typeof(DateTime));
+
                 visualizaragendamentos.Fill(DataTable);
                 AgenView.DataSource = DataTable;
 
@@ -272,7 +279,7 @@ namespace AplicativoAgendamento
             btn_SalvarAgen.Text = "Atualizar";
             DataInicio.Value = DateTime.Parse(infoAgen.Cells["data_inicio"].Value.ToString());
             DataFinal.Value = DateTime.Parse(infoAgen.Cells["data_fim"].Value.ToString());
-            AgenSalas.SelectedValue = infoAgen.Cells["qual_sala"].Value.ToString();
+            AgenSalas.SelectedValue = Convert.ToInt64(infoAgen.Cells["qual_sala"].Value);
             AgenEditandoId = infoAgen.Cells["id"].Value.ToString();
         }
 
@@ -284,7 +291,7 @@ namespace AplicativoAgendamento
             {
                 using var conexao = new Database().Conectar();
                 conexao.Open();
-                using var visualizarlogs = new NpgsqlDataAdapter("SELECT * FROM log_operacao", conexao);
+                using var visualizarlogs = new NpgsqlDataAdapter("SELECT * FROM log_operacao ORDER BY data_operacao DESC", conexao);
                 using var DataTable = new DataTable();
                 visualizarlogs.Fill(DataTable);
                 LogView.DataSource = DataTable;
