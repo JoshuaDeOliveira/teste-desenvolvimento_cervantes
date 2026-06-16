@@ -2,6 +2,7 @@ using Npgsql;
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace AplicativoAgendamento
 {
@@ -9,7 +10,7 @@ namespace AplicativoAgendamento
     {
         public Form1()
         {
-            InitializeComponent();    
+            InitializeComponent();
             AtualizarInfo();
 
             btnDeletar.Enabled = false;
@@ -31,7 +32,6 @@ namespace AplicativoAgendamento
             btnDeletar.Enabled = SalasView.SelectedRows.Count > 0;
         }
 
-
         private void CarregarSalas()
         {
             try
@@ -42,6 +42,10 @@ namespace AplicativoAgendamento
                 using var DataTable = new DataTable();
                 visualizarsalas.Fill(DataTable);
                 SalasView.DataSource = DataTable;
+                foreach (DataGridViewColumn coluna in SalasView.Columns)
+                {
+                    coluna.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
             }
             catch (NpgsqlException error)
             {
@@ -104,6 +108,7 @@ namespace AplicativoAgendamento
                 deletarSala.Parameters.AddWithValue("@id", long.Parse(SalaId));
 
                 deletarSala.ExecuteNonQuery();
+                txtNomeSala.Clear();
                 AtualizarInfo();
             }
             catch (NpgsqlException error)
@@ -146,6 +151,12 @@ namespace AplicativoAgendamento
                 using var DataTable = new DataTable();
                 visualizaragendamentos.Fill(DataTable);
                 AgenView.DataSource = DataTable;
+
+                AgenView.Columns["id"].Visible = false;
+                AgenView.Columns["qual_sala"].Visible = false;
+                AgenView.Columns["nome"].HeaderText = "Sala";
+                AgenView.Columns["data_inicio"].HeaderText = "Data/Horario de Início";
+                AgenView.Columns["data_fim"].HeaderText = "Data/Horario Final";
             }
             catch (NpgsqlException error)
             {
