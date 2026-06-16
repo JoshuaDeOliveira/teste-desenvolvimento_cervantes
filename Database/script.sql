@@ -175,12 +175,12 @@ CREATE OR REPLACE FUNCTION fn_bloquear_data_passado()
 RETURNS TRIGGER
 AS $$
 	BEGIN
-		IF NEW.data_inicio < CURRENT_TIMESTAMP THEN
-			RAISE EXCEPTION 'Não é possivel agendar a sala para uma data passada! Verifique novamente a data inserida';
-		END IF;
-
-        IF TG_OP = 'UPDATE' AND NEW.data_inicio = OLD.data_inicio THEN
+		IF TG_OP = 'UPDATE' AND date_trunc('minute', NEW.data_inicio) = date_trunc('minute', OLD.data_inicio) THEN
 			RETURN NEW;
+		END IF;
+	
+		IF date_trunc('minute', NEW.data_inicio) < date_trunc('minute', CURRENT_TIMESTAMP) THEN
+			RAISE EXCEPTION 'Não é possivel agendar a sala para uma data passada! Verifique novamente a data inserida';
 		END IF;
 
 		RETURN NEW;

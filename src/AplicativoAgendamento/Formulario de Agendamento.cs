@@ -15,8 +15,8 @@ namespace AplicativoAgendamento
 
             btnDeletar.Enabled = false;
             btnEditar.Enabled = false;
-            btnDeletarAgen.Enabled = false;
-            btnEditarAgen.Enabled = false;
+            btn_DeletarAgen.Enabled = false;
+            btn_EditarAgen.Enabled = false;
             DataInicio.MinDate = DateTime.Now;
             DataFinal.MinDate = DateTime.Now;
         }
@@ -81,6 +81,7 @@ namespace AplicativoAgendamento
 
                     SalaEditandoId = null;
                     btnSalvar.Text = "Adicionar";
+                    btnEditar.Text = "Editar";
                 }
                 txtNomeSala.Clear();
                 txtNomeSala.Focus();
@@ -101,14 +102,21 @@ namespace AplicativoAgendamento
 
             try
             {
-                string SalaId = infoid.Cells["id"].Value.ToString();
                 using var conexao = new Database().Conectar();
                 conexao.Open();
                 using var deletarSala = new NpgsqlCommand("DELETE FROM sala WHERE id = (@Id)", conexao);
-                deletarSala.Parameters.AddWithValue("@id", long.Parse(SalaId));
+                deletarSala.Parameters.AddWithValue("@id", (long)infoid.Cells["id"].Value);
 
                 deletarSala.ExecuteNonQuery();
                 txtNomeSala.Clear();
+
+                if (btnSalvar.Text == "Atualizar")
+                {
+                    SalaEditandoId = null;
+                    btnSalvar.Text = "Adicionar";
+                    btnEditar.Text = "Editar";
+                }
+
                 AtualizarInfo();
             }
             catch (NpgsqlException error)
@@ -123,12 +131,23 @@ namespace AplicativoAgendamento
 
         private void btnEditar_Click(object sender, EventArgs e)
         {
+            if (btnEditar.Text == "Cancelar")
+            {
+                txtNomeSala.Clear();
+                txtNomeSala.Focus();
+                SalaEditandoId = null;
+                btnSalvar.Text = "Adicionar";
+                btnEditar.Text = "Editar";
+                return;
+            }
+
             DataGridViewRow infosala = SalasView.SelectedRows[0];
             string SalaId = infosala.Cells["id"].Value.ToString();
             string SalaNome = infosala.Cells["nome"].Value.ToString();
 
             txtNomeSala.Text = SalaNome;
             btnSalvar.Text = "Atualizar";
+            btnEditar.Text = "Cancelar";
             SalaEditandoId = SalaId;
         }
 
@@ -136,8 +155,8 @@ namespace AplicativoAgendamento
 
         private void AgenView_SelectionChanged(object sender, EventArgs e)
         {
-            btnEditarAgen.Enabled = AgenView.SelectedRows.Count > 0;
-            btnDeletarAgen.Enabled = AgenView.SelectedRows.Count > 0;
+            btn_EditarAgen.Enabled = AgenView.SelectedRows.Count > 0;
+            btn_DeletarAgen.Enabled = AgenView.SelectedRows.Count > 0;
         }
 
         private void CarregarAgendamentos()
@@ -148,22 +167,26 @@ namespace AplicativoAgendamento
                 conexao.Open();
                 using var visualizaragendamentos = new NpgsqlDataAdapter("SELECT agendamento.id, agendamento.qual_sala, sala.nome, agendamento.data_inicio,agendamento.data_fim " +
                     "FROM agendamento JOIN sala ON agendamento.qual_sala = sala.id", conexao);
-                using var DataTable = new DataTable();
+                using var datatable = new DataTable();
 
-                DataTable.Columns.Add("id", typeof(long));
-                DataTable.Columns.Add("qual_sala", typeof(long));
-                DataTable.Columns.Add("nome", typeof(string));
-                DataTable.Columns.Add("data_inicio", typeof(DateTime));
-                DataTable.Columns.Add("data_fim", typeof(DateTime));
+                datatable.Columns.Add("id", typeof(long));
+                datatable.Columns.Add("qual_sala", typeof(long));
+                datatable.Columns.Add("nome", typeof(string));
+                var colInicio = datatable.Columns.Add("data_inicio", typeof(DateTime));
+                var colFim = datatable.Columns.Add("data_fim", typeof(DateTime));
 
-                visualizaragendamentos.Fill(DataTable);
-                AgenView.DataSource = DataTable;
+                colInicio.DateTimeMode = DataSetDateTime.Local;
+                colFim.DateTimeMode = DataSetDateTime.Local;
+
+                visualizaragendamentos.Fill(datatable);
+                AgenView.DataSource = datatable;
 
                 AgenView.Columns["id"].Visible = false;
                 AgenView.Columns["qual_sala"].Visible = false;
                 AgenView.Columns["nome"].HeaderText = "Sala";
                 AgenView.Columns["data_inicio"].HeaderText = "Data/Horario de Início";
                 AgenView.Columns["data_fim"].HeaderText = "Data/Horario Final";
+
             }
             catch (NpgsqlException error)
             {
@@ -215,7 +238,7 @@ namespace AplicativoAgendamento
                 var AgenInicio = DataInicio.Value;
                 var AgenFim = DataFinal.Value;
 
-                if (AgenEditandoId == null)
+                if (string.IsNullOrEmpty(AgenEditandoId))
                 {
                     using var NovoAgendamento = new NpgsqlCommand("INSERT INTO agendamento(qual_sala, data_inicio, data_fim) VALUES (@IdSala, @DataInicio, @DataFim)", conexao);
                     NovoAgendamento.Parameters.AddWithValue("@DataInicio", AgenInicio);
@@ -234,9 +257,12 @@ namespace AplicativoAgendamento
                     atualizarAgendamento.ExecuteNonQuery();
 
                     btn_SalvarAgen.Text = "Adicionar";
+                    btn_EditarAgen.Text = "Editar";
                     AgenEditandoId = null;
                 }
 
+                DataInicio.Value = DateTime.Now;
+                DataFinal.Value = DateTime.Now;
                 AtualizarInfo();
             }
             catch (NpgsqlException error)
@@ -249,7 +275,7 @@ namespace AplicativoAgendamento
             }
         }
 
-        private void btnDeletarAgen_Click(object sender, EventArgs e)
+        private void btn_DeletarAgen_Click(object sender, EventArgs e)
         {
             try
             {
@@ -260,6 +286,17 @@ namespace AplicativoAgendamento
                 deletarAgendamento.Parameters.AddWithValue("@id", long.Parse(idAgen));
                 deletarAgendamento.ExecuteNonQuery();
 
+                if (btn_SalvarAgen.Text == "Atualizar")
+                {
+                    btn_SalvarAgen.Text = "Adicionar";
+                    btn_EditarAgen.Text = "Editar";
+                    AgenEditandoId = null;
+                }
+
+                DataInicio.MinDate = new DateTime(1753, 1, 1);
+                DataFinal.MinDate = new DateTime(1753, 1, 1);
+                DataInicio.Value = DateTime.Now;
+                DataFinal.Value = DateTime.Now;
                 AtualizarInfo();
             }
             catch (NpgsqlException error)
@@ -272,11 +309,28 @@ namespace AplicativoAgendamento
             }
         }
 
-        private void btnEditarAgen_Click(object sender, EventArgs e)
+        private void btn_EditarAgen_Click(object sender, EventArgs e)
         {
+            if (btn_EditarAgen.Text == "Cancelar")
+            {
+                DataInicio.MinDate = new DateTime(1753, 1, 1);
+                DataFinal.MinDate = new DateTime(1753, 1, 1);
+                DataInicio.Value = DateTime.Now;
+                DataFinal.Value = DateTime.Now;
+                if (AgenSalas.Items.Count > 0) AgenSalas.SelectedIndex = 0;
+
+                AgenEditandoId = null;
+                btn_SalvarAgen.Text = "Adicionar";
+                btn_EditarAgen.Text = "Editar";
+                return;
+            }
+
             DataGridViewRow infoAgen = AgenView.SelectedRows[0];
 
+            DataInicio.MinDate = new DateTime(1753, 1, 1);
+            DataFinal.MinDate = new DateTime(1753, 1, 1);
             btn_SalvarAgen.Text = "Atualizar";
+            btn_EditarAgen.Text = "Cancelar";
             DataInicio.Value = DateTime.Parse(infoAgen.Cells["data_inicio"].Value.ToString());
             DataFinal.Value = DateTime.Parse(infoAgen.Cells["data_fim"].Value.ToString());
             AgenSalas.SelectedValue = Convert.ToInt64(infoAgen.Cells["qual_sala"].Value);
@@ -293,6 +347,9 @@ namespace AplicativoAgendamento
                 conexao.Open();
                 using var visualizarlogs = new NpgsqlDataAdapter("SELECT * FROM log_operacao ORDER BY data_operacao DESC", conexao);
                 using var DataTable = new DataTable();
+                var colData = DataTable.Columns.Add("data_operacao", typeof(DateTime));
+                colData.DateTimeMode = DataSetDateTime.Local;
+
                 visualizarlogs.Fill(DataTable);
                 LogView.DataSource = DataTable;
             }
